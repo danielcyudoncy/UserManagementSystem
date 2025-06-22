@@ -63,12 +63,8 @@ export default function ProfileSetup() {
         description: "Profile created successfully!",
       });
 
-      // Redirect based on role
-      if (["Admin", "Assignment Editor", "Head of Department"].includes(selectedRole)) {
-        setLocation("/admin");
-      } else {
-        setLocation("/dashboard");
-      }
+      // Force a page reload to refresh auth state and redirect
+      window.location.href = "/";
     } catch (error) {
       toast({
         title: "Error",

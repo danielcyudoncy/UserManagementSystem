@@ -134,7 +134,11 @@ function Router() {
                   ? <Redirect to="/admin" />
                   : <Redirect to="/dashboard" />
               ) : <Redirect to="/profile-setup" />
-            ) : <Redirect to="/profile-setup" />
+            ) : (
+              <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+              </div>
+            )
           ) : <Redirect to="/login" />
         ) : (
           <div className="min-h-screen flex items-center justify-center">

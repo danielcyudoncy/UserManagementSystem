@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (response.ok) {
               const appUserData = await response.json();
               setAppUser(appUserData);
+              console.log('User data loaded:', appUserData);
             } else if (response.status === 404) {
               // User exists in Firebase but not in our database - create profile
               const createResponse = await fetch('/api/users', {
@@ -95,7 +96,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const newUserData = await createResponse.json();
                 setAppUser(newUserData);
               } else {
-                console.error("Failed to create user profile");
+                const errorText = await createResponse.text();
+                console.error("Failed to create user profile:", errorText);
               }
             }
           } catch (error) {
