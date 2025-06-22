@@ -6,9 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { ListTodo } from "lucide-react";
-import { useCreateUser } from "@/hooks/useUsers";
+import { useUpdateUser } from "@/hooks/useUsers";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "wouter";
 
 const roles = [
   "Reporter",
@@ -19,17 +18,17 @@ const roles = [
 ];
 
 export default function ProfileSetup() {
-  const [fullName, setFullName] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const { user } = useAuth();
+  const { user, appUser } = useAuth();
   const { toast } = useToast();
-  const createUser = useCreateUser();
-  const [, setLocation] = useLocation();
+  const updateUser = useUpdateUser();
+  
+  const [fullName, setFullName] = useState(user?.displayName || appUser?.fullName || "");
+  const [selectedRole, setSelectedRole] = useState(appUser?.role || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!fullName || !selectedRole) {
+    if (!fullName.trim() || !selectedRole) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -38,38 +37,37 @@ export default function ProfileSetup() {
       return;
     }
 
-    if (!user) {
+    if (!user || !appUser) {
       toast({
         title: "Error", 
-        description: "No authenticated user found",
+        description: "User data not found",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      await createUser.mutateAsync({
-        uid: user.uid,
-        fullName,
-        email: user.email || "",
-        role: selectedRole,
-        photoUrl: user.photoURL || "",
-        fcmToken: "",
-        profileComplete: true,
-        isActive: true,
+      await updateUser.mutateAsync({
+        id: appUser.id,
+        data: {
+          fullName: fullName.trim(),
+          role: selectedRole,
+          profileComplete: true,
+        }
       });
 
       toast({
         title: "Success",
-        description: "Profile created successfully!",
+        description: "Profile updated successfully!",
       });
 
       // Force a page reload to refresh auth state and redirect
       window.location.href = "/";
     } catch (error) {
+      console.error("Profile update error:", error);
       toast({
         title: "Error",
-        description: "Failed to create profile. Please try again.",
+        description: "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -79,14 +77,15 @@ export default function ProfileSetup() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-              <ListTodo className="text-primary-foreground text-xl" />
-            </div>
+          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+            <ListTodo className="text-primary-foreground text-2xl" />
           </div>
-          <CardTitle className="text-2xl font-bold">Complete Your Profile</CardTitle>
-          <p className="text-gray-600 dark:text-gray-400">Choose your role to get started</p>
+          <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Tell us about yourself to get started
+          </p>
         </CardHeader>
+        
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -98,7 +97,7 @@ export default function ProfileSetup() {
                 placeholder="Enter your full name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                disabled={createUser.isPending}
+                disabled={updateUser.isPending}
                 className="w-full"
               />
             </div>
@@ -107,7 +106,7 @@ export default function ProfileSetup() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Role
               </label>
-              <Select value={selectedRole} onValueChange={setSelectedRole} disabled={createUser.isPending}>
+              <Select value={selectedRole} onValueChange={setSelectedRole} disabled={updateUser.isPending}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
@@ -124,13 +123,13 @@ export default function ProfileSetup() {
             <div className="pt-4">
               <Button
                 type="submit"
-                disabled={createUser.isPending}
+                disabled={updateUser.isPending}
                 className="w-full"
               >
-                {createUser.isPending ? (
+                {updateUser.isPending ? (
                   <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    Creating Profile...
+                    <LoadingSpinner className="mr-2" size="sm" />
+                    Updating Profile...
                   </>
                 ) : (
                   "Complete Profile"
