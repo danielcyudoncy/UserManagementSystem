@@ -24,29 +24,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+    const initAuth = async () => {
+      // Check for demo mode first
+      const demoMode = localStorage.getItem('demoMode');
+      const demoSession = localStorage.getItem('demoSession');
       
-      if (user) {
+      if (demoMode === 'true' && demoSession) {
         try {
-          const response = await fetch(`/api/users/uid/${user.uid}`, {
+          const session = JSON.parse(demoSession);
+          setUser({
+            uid: session.uid,
+            email: session.email,
+            displayName: session.displayName,
+            photoURL: session.photoURL,
+            emailVerified: session.emailVerified
+          } as any);
+          
+          // Get demo user data from API
+          const response = await fetch(`/api/users/uid/${session.uid}`, {
             credentials: "include",
           });
           if (response.ok) {
             const appUserData = await response.json();
             setAppUser(appUserData);
           }
+          setLoading(false);
+          return;
         } catch (error) {
-          console.error("Failed to fetch user data:", error);
+          console.error("Demo session error:", error);
+          localStorage.removeItem('demoMode');
+          localStorage.removeItem('demoSession');
         }
-      } else {
-        setAppUser(null);
       }
-      
-      setLoading(false);
-    });
 
-    return unsubscribe;
+      // Regular Firebase auth
+      onAuthStateChanged(auth, async (user) => {
+        setUser(user);
+        
+        if (user) {
+          try {
+            const response = await fetch(`/api/users/uid/${user.uid}`, {
+              credentials: "include",
+            });
+            if (response.ok) {
+              const appUserData = await response.json();
+              setAppUser(appUserData);
+            }
+          } catch (error) {
+            console.error("Failed to fetch user data:", error);
+          }
+        } else {
+          setAppUser(null);
+        }
+        
+        setLoading(false);
+      });
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -59,6 +94,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    // Clear demo mode if active
+    localStorage.removeItem('demoMode');
+    localStorage.removeItem('demoSession');
+    
     await signOut(auth);
   };
 

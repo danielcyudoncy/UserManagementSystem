@@ -126,13 +126,21 @@ function Router() {
       </Route>
       
       <Route path="/">
-        {!loading && user ? (
-          appUser ? (
-            appUser.role === "Admin" || appUser.role === "Assignment Editor" || appUser.role === "Head of Department" 
-              ? <Redirect to="/admin" />
-              : <Redirect to="/dashboard" />
-          ) : <Redirect to="/profile-setup" />
-        ) : <Redirect to="/login" />}
+        {!loading ? (
+          user ? (
+            appUser ? (
+              appUser.profileComplete ? (
+                appUser.role === "Admin" || appUser.role === "Assignment Editor" || appUser.role === "Head of Department" 
+                  ? <Redirect to="/admin" />
+                  : <Redirect to="/dashboard" />
+              ) : <Redirect to="/profile-setup" />
+            ) : <Redirect to="/profile-setup" />
+          ) : <Redirect to="/login" />
+        ) : (
+          <div className="min-h-screen flex items-center justify-center">
+            <LoadingSpinner size="lg" />
+          </div>
+        )}
       </Route>
       
       <Route component={NotFound} />

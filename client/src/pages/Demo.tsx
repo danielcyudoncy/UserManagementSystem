@@ -61,7 +61,7 @@ export default function Demo() {
     setIsLoading(true);
     
     try {
-      // Create a demo session by directly setting the user in localStorage
+      // Create a demo session
       const demoSession = {
         uid: user.id,
         email: user.email,
@@ -74,15 +74,12 @@ export default function Demo() {
       localStorage.setItem('demoSession', JSON.stringify(demoSession));
       localStorage.setItem('demoMode', 'true');
       
-      // Navigate based on role
+      // Navigate based on role after setting demo mode
       if (user.role === "Admin" || user.role === "Assignment Editor") {
-        navigate("/admin");
+        window.location.href = "/admin";
       } else {
-        navigate("/dashboard");
+        window.location.href = "/dashboard";
       }
-      
-      // Reload to trigger auth state change
-      window.location.reload();
     } catch (error) {
       console.error("Demo login error:", error);
     } finally {
