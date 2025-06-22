@@ -11,6 +11,9 @@ import Demo from "@/pages/Demo";
 import ProfileSetup from "@/pages/ProfileSetup";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
+import AdminTaskManagement from "@/pages/AdminTaskManagement";
+import AdminAnalytics from "@/pages/AdminAnalytics";
+import AdminSettings from "@/pages/AdminSettings";
 import ReporterDashboard from "@/pages/ReporterDashboard";
 import CameramanDashboard from "@/pages/CameramanDashboard";
 import NotFound from "@/pages/not-found";
@@ -114,6 +117,24 @@ function Router() {
       <Route path="/admin/users">
         <ProtectedRoute>
           <UserManagement />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/admin/tasks">
+        <ProtectedRoute>
+          <AdminTaskManagement />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/admin/analytics">
+        <ProtectedRoute>
+          <AdminAnalytics />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/admin/settings">
+        <ProtectedRoute>
+          <AdminSettings />
         </ProtectedRoute>
       </Route>
       
