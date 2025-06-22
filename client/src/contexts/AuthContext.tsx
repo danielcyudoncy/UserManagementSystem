@@ -66,9 +66,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const response = await fetch(`/api/users/uid/${user.uid}`, {
               credentials: "include",
             });
+            
             if (response.ok) {
               const appUserData = await response.json();
               setAppUser(appUserData);
+            } else if (response.status === 404) {
+              // User exists in Firebase but not in our database - create profile
+              const createResponse = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                  uid: user.uid,
+                  fullName: user.displayName || user.email?.split('@')[0] || "User",
+                  email: user.email || "",
+                  role: "", // Will be set during profile setup
+                  photoUrl: user.photoURL || "",
+                  fcmToken: "",
+                  profileComplete: false,
+                  isActive: true,
+                  lastActive: new Date(),
+                }),
+              });
+              
+              if (createResponse.ok) {
+                const newUserData = await createResponse.json();
+                setAppUser(newUserData);
+              } else {
+                console.error("Failed to create user profile");
+              }
             }
           } catch (error) {
             console.error("Failed to fetch user data:", error);
