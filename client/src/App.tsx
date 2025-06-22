@@ -105,7 +105,7 @@ function Router() {
       </Route>
 
       <Route path="/profile-setup">
-        {!loading && user && !appUser ? <ProfileSetup /> : <Redirect to="/" />}
+        {!loading && user && appUser && !appUser.profileComplete ? <ProfileSetup /> : <Redirect to="/" />}
       </Route>
       
       <Route path="/admin">

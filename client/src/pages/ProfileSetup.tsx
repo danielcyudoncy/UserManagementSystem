@@ -22,8 +22,17 @@ export default function ProfileSetup() {
   const { toast } = useToast();
   const updateUser = useUpdateUser();
   
-  const [fullName, setFullName] = useState(user?.displayName || appUser?.fullName || "");
+  const [fullName, setFullName] = useState(appUser?.fullName || user?.displayName || "");
   const [selectedRole, setSelectedRole] = useState(appUser?.role || "");
+
+  // Show loading spinner while data is being fetched
+  if (!appUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
