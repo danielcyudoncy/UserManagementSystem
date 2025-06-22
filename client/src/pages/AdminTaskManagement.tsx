@@ -14,7 +14,7 @@ import { format } from "date-fns";
 
 export default function AdminTaskManagement() {
   const { data: tasks, isLoading: tasksLoading } = useTasks();
-  const { data: users, isLoading: usersLoading } = useUserHook();
+  const { data: users, isLoading: usersLoading } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
