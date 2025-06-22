@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { ListTodo } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -84,6 +85,15 @@ export default function Login() {
               )}
             </Button>
           </form>
+          
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                Create account
+              </Link>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

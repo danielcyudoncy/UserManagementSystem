@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import ProfileSetup from "@/pages/ProfileSetup";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
@@ -89,6 +90,10 @@ function Router() {
               : <Redirect to="/dashboard" />
           ) : <Redirect to="/profile-setup" />
         ) : <Login />}
+      </Route>
+
+      <Route path="/signup">
+        {!loading && !user ? <Signup /> : <Redirect to="/" />}
       </Route>
 
       <Route path="/profile-setup">
