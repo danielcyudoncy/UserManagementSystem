@@ -1,4 +1,4 @@
-import { users, tasks, adminProfiles, type User, type InsertUser, type Task, type InsertTask, type AdminProfile, type InsertAdminProfile } from "@shared/schema";
+import { User, Task, AdminProfile, InsertUser, InsertTask, InsertAdminProfile } from "../shared/schema";
 
 export interface IStorage {
   // User operations
@@ -42,191 +42,46 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentTaskId = 1;
     this.currentAdminId = 1;
-    this.initializeSampleData();
   }
 
-  private initializeSampleData() {
-    const now = new Date();
-    
-    // Sample users
-    const sampleUsers = [
-      {
-        uid: "admin_user",
-        fullName: "John Administrator",
-        email: "admin@taskmanager.com",
-        role: "Admin",
-        photoUrl: "",
-        fcmToken: "",
-        profileComplete: true,
-        isActive: true,
-        lastActive: now,
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        uid: "reporter_user",
-        fullName: "Sarah Reporter",
-        email: "sarah@taskmanager.com",
-        role: "Reporter",
-        photoUrl: "",
-        fcmToken: "",
-        profileComplete: true,
-        isActive: true,
-        lastActive: now,
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        uid: "cameraman_user",
-        fullName: "Mike Camera",
-        email: "mike@taskmanager.com",
-        role: "Cameraman",
-        photoUrl: "",
-        fcmToken: "",
-        profileComplete: true,
-        isActive: true,
-        lastActive: now,
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        uid: "editor_user",
-        fullName: "Lisa Editor",
-        email: "lisa@taskmanager.com",
-        role: "Assignment Editor",
-        photoUrl: "",
-        fcmToken: "",
-        profileComplete: true,
-        isActive: true,
-        lastActive: now,
-        createdAt: now,
-        updatedAt: now
-      }
-    ];
-
-    sampleUsers.forEach(userData => {
-      const user = { ...userData, id: this.currentUserId++ };
-      this.users.set(user.id, user);
-    });
-
-    // Sample tasks
-    const sampleTasks = [
-      {
-        uid: "task_001",
-        title: "Breaking News: City Council Meeting",
-        description: "Cover the emergency city council meeting about the new development project",
-        status: "pending",
-        priority: "high",
-        assignedTo: "reporter_user",
-        createdBy: "editor_user",
-        createdByName: "Lisa Editor",
-        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-        completedAt: null,
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        uid: "task_002",
-        title: "Interview with Mayor",
-        description: "Scheduled interview with the mayor regarding upcoming budget decisions",
-        status: "in-progress",
-        priority: "medium",
-        assignedTo: "reporter_user",
-        createdBy: "editor_user",
-        createdByName: "Lisa Editor",
-        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-        completedAt: null,
-        createdAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-        updatedAt: now
-      },
-      {
-        uid: "task_003",
-        title: "Sports Event Coverage",
-        description: "Film the high school championship game",
-        status: "pending",
-        priority: "medium",
-        assignedTo: "cameraman_user",
-        createdBy: "editor_user",
-        createdByName: "Lisa Editor",
-        dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-        completedAt: null,
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        uid: "task_004",
-        title: "Weather Report Footage",
-        description: "Capture B-roll footage for weekly weather segment",
-        status: "completed",
-        priority: "low",
-        assignedTo: "cameraman_user",
-        createdBy: "cameraman_user",
-        createdByName: "Mike Camera",
-        dueDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        completedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000),
-        createdAt: new Date(now.getTime() - 48 * 60 * 60 * 1000),
-        updatedAt: now
-      },
-      {
-        uid: "task_005",
-        title: "Community Event Report",
-        description: "Write feature story on local community festival",
-        status: "completed",
-        priority: "low",
-        assignedTo: "reporter_user",
-        createdBy: "reporter_user",
-        createdByName: "Sarah Reporter",
-        dueDate: new Date(Date.now() - 48 * 60 * 60 * 1000),
-        completedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-        createdAt: new Date(now.getTime() - 72 * 60 * 60 * 1000),
-        updatedAt: now
-      }
-    ];
-
-    sampleTasks.forEach(taskData => {
-      const task = { ...taskData, id: this.currentTaskId++ };
-      this.tasks.set(task.id, task);
-    });
-
-    // Sample admin profile
-    const adminProfile = {
-      userId: "admin_user",
-      privileges: ["full_access", "user_management", "task_assignment"],
-      createdAt: now,
-      updatedAt: now,
-      id: this.currentAdminId++
-    };
-    this.adminProfiles.set("admin_user", adminProfile);
-  }
-
-  // User operations
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
   async getUserByUid(uid: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.uid === uid);
+    for (const [, user] of this.users.entries()) {
+      if (user.uid === uid) {
+        return user;
+      }
+    }
+    return undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    for (const [, user] of this.users.entries()) {
+      if (user.email === email) {
+        return user;
+      }
+    }
+    return undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const now = new Date();
     const user: User = { 
-      ...insertUser, 
-      id,
-      createdAt: now,
-      updatedAt: now,
-      isActive: true,
-      lastActive: now,
-      photoUrl: insertUser.photoUrl || "",
-      fcmToken: insertUser.fcmToken || "",
-      profileComplete: insertUser.profileComplete || false
+      id: this.currentUserId++,
+      uid: insertUser.uid,
+      fullName: insertUser.fullName,
+      email: insertUser.email,
+      role: insertUser.role,
+      photoUrl: insertUser.photoUrl || null,
+      fcmToken: insertUser.fcmToken || null,
+      profileComplete: insertUser.profileComplete || false,
+      isActive: insertUser.isActive || true,
+      lastActive: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
-    this.users.set(id, user);
+    this.users.set(user.id, user);
     return user;
   }
 
@@ -255,31 +110,36 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).filter(user => user.role === role);
   }
 
-  // Task operations
   async getTask(id: number): Promise<Task | undefined> {
     return this.tasks.get(id);
   }
 
   async getTaskByUid(uid: string): Promise<Task | undefined> {
-    return Array.from(this.tasks.values()).find(task => task.uid === uid);
+    for (const [, task] of this.tasks.entries()) {
+      if (task.uid === uid) {
+        return task;
+      }
+    }
+    return undefined;
   }
 
   async createTask(insertTask: InsertTask): Promise<Task> {
-    const id = this.currentTaskId++;
-    const now = new Date();
     const task: Task = { 
-      ...insertTask, 
-      id,
-      createdAt: now,
-      updatedAt: now,
+      id: this.currentTaskId++,
+      uid: insertTask.uid,
+      title: insertTask.title,
+      description: insertTask.description || null,
       status: insertTask.status || "pending",
-      description: insertTask.description || "",
-      priority: insertTask.priority || "medium",
+      priority: insertTask.priority || null,
       assignedTo: insertTask.assignedTo || null,
+      createdBy: insertTask.createdBy,
+      createdByName: insertTask.createdByName,
       dueDate: insertTask.dueDate || null,
-      completedAt: null
+      completedAt: insertTask.completedAt || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
-    this.tasks.set(id, task);
+    this.tasks.set(task.id, task);
     return task;
   }
 
@@ -312,20 +172,17 @@ export class MemStorage implements IStorage {
     return Array.from(this.tasks.values()).filter(task => task.createdBy === createdBy);
   }
 
-  // Admin operations
   async getAdminProfile(userId: string): Promise<AdminProfile | undefined> {
     return this.adminProfiles.get(userId);
   }
 
   async createAdminProfile(insertProfile: InsertAdminProfile): Promise<AdminProfile> {
-    const id = this.currentAdminId++;
-    const now = new Date();
     const profile: AdminProfile = { 
-      ...insertProfile, 
-      id,
-      createdAt: now,
-      updatedAt: now,
-      privileges: insertProfile.privileges || []
+      id: this.currentAdminId++,
+      userId: insertProfile.userId,
+      privileges: insertProfile.privileges || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     this.adminProfiles.set(insertProfile.userId, profile);
     return profile;
