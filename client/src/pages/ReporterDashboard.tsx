@@ -63,12 +63,13 @@ export default function ReporterDashboard() {
       await createTask.mutateAsync({
         uid: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description.trim() || "",
         priority: newTask.priority,
         status: "pending",
         createdBy: appUser.uid,
         createdByName: appUser.fullName,
-        dueDate: newTask.dueDate ? new Date(newTask.dueDate) : null,
+        dueDate: newTask.dueDate ? new Date(newTask.dueDate) : undefined,
+        assignedTo: appUser.uid, // Assign to self initially
       });
 
       toast({
