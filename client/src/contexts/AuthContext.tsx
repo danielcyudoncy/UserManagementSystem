@@ -88,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   fcmToken: "",
                   profileComplete: false,
                   isActive: true,
-                  lastActive: new Date(),
                 }),
               });
               

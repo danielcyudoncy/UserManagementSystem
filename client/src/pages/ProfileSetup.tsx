@@ -56,6 +56,7 @@ export default function ProfileSetup() {
         photoUrl: user.photoURL || "",
         fcmToken: "",
         profileComplete: true,
+        isActive: true,
       });
 
       toast({
