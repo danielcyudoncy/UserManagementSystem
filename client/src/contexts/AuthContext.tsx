@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Regular Firebase auth
-      onAuthStateChanged(auth, async (user) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
         setUser(user);
         
         if (user) {
@@ -79,17 +79,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         setLoading(false);
       });
+
+      return unsubscribe;
     };
 
     initAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
-    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      throw error;
     }
   };
 
