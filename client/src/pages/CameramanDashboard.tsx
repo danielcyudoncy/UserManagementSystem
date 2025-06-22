@@ -58,17 +58,19 @@ export default function CameramanDashboard() {
     }
 
     try {
-      await createTask.mutateAsync({
+      const taskData = {
         uid: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title: newTask.title.trim(),
         description: newTask.description.trim() || "",
-        priority: newTask.priority,
+        priority: newTask.priority || "medium",
         status: "pending",
         createdBy: appUser.uid,
         createdByName: appUser.fullName,
-        dueDate: newTask.dueDate ? new Date(newTask.dueDate) : undefined,
-        assignedTo: appUser.uid, // Assign to self initially
-      });
+        dueDate: newTask.dueDate ? new Date(newTask.dueDate) : null,
+        assignedTo: appUser.uid,
+      };
+      
+      await createTask.mutateAsync(taskData);
 
       toast({
         title: "Success",
