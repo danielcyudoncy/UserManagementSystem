@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
+import Demo from "@/pages/Demo";
 import ProfileSetup from "@/pages/ProfileSetup";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
@@ -94,6 +95,10 @@ function Router() {
 
       <Route path="/signup">
         {!loading && !user ? <Signup /> : <Redirect to="/" />}
+      </Route>
+
+      <Route path="/demo">
+        <Demo />
       </Route>
 
       <Route path="/profile-setup">

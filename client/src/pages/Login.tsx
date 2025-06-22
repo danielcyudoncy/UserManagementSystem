@@ -86,13 +86,18 @@ export default function Login() {
             </Button>
           </form>
           
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-3">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{" "}
               <Link href="/signup" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
                 Create account
               </Link>
             </p>
+            <div className="border-t pt-3">
+              <Link href="/demo" className="text-sm text-green-600 dark:text-green-400 hover:underline font-medium">
+                Try Demo Mode (No Firebase required)
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
